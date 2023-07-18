@@ -45,7 +45,10 @@ ASpaceCombatPawn::ASpaceCombatPawn()
 	TurnSpeed = 50.f;
 	MaxSpeed = 4000.f;
 	MinSpeed = 500.f;
+	RollSpeed = 50.f;
 	CurrentForwardSpeed = 500.f;
+	CurrentThrottle = 0.5f;
+	ThrottleRate = 0.2f;
 }
 
 void ASpaceCombatPawn::Tick(float DeltaSeconds)
@@ -84,25 +87,46 @@ void ASpaceCombatPawn::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	check(PlayerInputComponent);
 
 	// Bind our control axis' to callback functions
-	PlayerInputComponent->BindAxis("Thrust", this, &ASpaceCombatPawn::ThrustInput);
+	PlayerInputComponent->BindAxis("Throttle", this, &ASpaceCombatPawn::ThrottleInput);
 	PlayerInputComponent->BindAxis("MoveUp", this, &ASpaceCombatPawn::MoveUpInput);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ASpaceCombatPawn::MoveRightInput);
+	PlayerInputComponent->BindAxis("RollClockwise", this, &ASpaceCombatPawn::RollClockwiseInput);
+	PlayerInputComponent->BindAxis("YawRight", this, &ASpaceCombatPawn::YawRightInput);
 }
 
-void ASpaceCombatPawn::ThrustInput(float Val)
+void ASpaceCombatPawn::ThrottleInput(float Val)
 {
 	// Is there any input?
 	bool bHasInput = !FMath::IsNearlyEqual(Val, 0.f);
-	// If input is not held down, reduce speed
-	float CurrentAcc = bHasInput ? (Val * Acceleration) : (-0.5f * Acceleration);
+	// If input is not held down, use current throttle
+	//otherwise modify the throttle according to ThrottleRate
+	if (bHasInput)
+	{
+		CurrentThrottle += Val * GetWorld()->GetDeltaSeconds() * ThrottleRate;
+		CurrentThrottle = FMath::Clamp(CurrentThrottle, 0.f, 1.f); //throttle can go between 0 and 1 (0-100% throttle)
+	}
+
+	//always accelerate as much as possible
+	float CurrentAcc = Acceleration;
+
 	// Calculate new speed
 	float NewForwardSpeed = CurrentForwardSpeed + (GetWorld()->GetDeltaSeconds() * CurrentAcc);
-	// Clamp between MinSpeed and MaxSpeed
-	CurrentForwardSpeed = FMath::Clamp(NewForwardSpeed, MinSpeed, MaxSpeed);
+	// Clamp between MinSpeed and MaxSpeed, limited by Throttle
+	CurrentForwardSpeed = FMath::Clamp(NewForwardSpeed, MinSpeed, CurrentThrottle * MaxSpeed);
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Throttle: %f"), CurrentThrottle));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Speed: %f"), CurrentForwardSpeed));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Acc: %f"), CurrentAcc));
+	}
 }
 
 void ASpaceCombatPawn::MoveUpInput(float Val)
 {
+	if (bInvertUpInput) {
+		Val *= -1;
+	}
+
 	// Target pitch speed is based in input
 	float TargetPitchSpeed = (Val * TurnSpeed * -1.f);
 
@@ -113,21 +137,19 @@ void ASpaceCombatPawn::MoveUpInput(float Val)
 	CurrentPitchSpeed = FMath::FInterpTo(CurrentPitchSpeed, TargetPitchSpeed, GetWorld()->GetDeltaSeconds(), 2.f);
 }
 
-void ASpaceCombatPawn::MoveRightInput(float Val)
+void ASpaceCombatPawn::RollClockwiseInput(float Val)
+{
+	float TargetRollSpeed = (Val * RollSpeed);
+
+	// Smoothly interpolate roll speed
+	CurrentRollSpeed = FMath::FInterpTo(CurrentRollSpeed, TargetRollSpeed, GetWorld()->GetDeltaSeconds(), 2.f);
+}
+
+void ASpaceCombatPawn::YawRightInput(float Val)
 {
 	// Target yaw speed is based on input
 	float TargetYawSpeed = (Val * TurnSpeed);
 
 	// Smoothly interpolate to target yaw speed
 	CurrentYawSpeed = FMath::FInterpTo(CurrentYawSpeed, TargetYawSpeed, GetWorld()->GetDeltaSeconds(), 2.f);
-
-	// Is there any left/right input?
-	const bool bIsTurning = FMath::Abs(Val) > 0.2f;
-
-	// If turning, yaw value is used to influence roll
-	// If not turning, roll to reverse current roll value.
-	float TargetRollSpeed = bIsTurning ? (CurrentYawSpeed * 0.5f) : (GetActorRotation().Roll * -2.f);
-
-	// Smoothly interpolate roll speed
-	CurrentRollSpeed = FMath::FInterpTo(CurrentRollSpeed, TargetRollSpeed, GetWorld()->GetDeltaSeconds(), 2.f);
 }

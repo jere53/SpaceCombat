@@ -36,13 +36,16 @@ protected:
 	// End APawn overrides
 
 	/** Bound to the thrust axis */
-	void ThrustInput(float Val);
+	void ThrottleInput(float Val);
 	
 	/** Bound to the vertical axis */
 	void MoveUpInput(float Val);
 
 	/** Bound to the horizontal axis */
-	void MoveRightInput(float Val);
+	void RollClockwiseInput(float Val);
+
+	/** Bound to dedicated buttons*/
+	void YawRightInput(float Val);
 
 private:
 
@@ -62,6 +65,10 @@ private:
 	UPROPERTY(Category=Yaw, EditAnywhere)
 	float MinSpeed;
 
+	/** How quickly pawn can roll*/
+	UPROPERTY(Category = Roll, EditAnywhere)
+		float RollSpeed;
+
 	/** Current forward speed */
 	float CurrentForwardSpeed;
 
@@ -74,6 +81,14 @@ private:
 	/** Current roll speed */
 	float CurrentRollSpeed;
 
+	/**Current Throttle setting**/
+	float CurrentThrottle;
+
+	/**How much does the throttle increase each second, if trying to get to full throttle**/
+	float ThrottleRate;
+
+	/**Should we invert the input to go up**/
+	bool bInvertUpInput;
 public:
 	/** Returns PlaneMesh subobject **/
 	FORCEINLINE class UStaticMeshComponent* GetPlaneMesh() const { return PlaneMesh; }
