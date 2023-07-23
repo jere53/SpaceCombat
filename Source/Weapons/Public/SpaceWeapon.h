@@ -29,13 +29,20 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float WeaponRange;
 
-	//how fast the fired projectiles move
+	//projectile base damage
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float WeaponDamage;
+
+	//how fast the fired projectiles move UEunits/Second
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float ProjectileSpeed;
 
 	//how many projectiles we can fire in a second
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float RateOfFire;
+
+	UFUNCTION(BlueprintCallable)
+		void FireWeapon();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

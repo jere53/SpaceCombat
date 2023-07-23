@@ -8,8 +8,8 @@
 // Sets default values
 AProjectile::AProjectile()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	// We dont want to start with tick enabled.
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -30,10 +30,6 @@ void AProjectile::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor*
 	Destroy();
 }
 
-void AProjectile::ProjectileMove(float DeltaTime)
-{
-}
-
 // Called every frame
 void AProjectile::Tick(float DeltaTime)
 {
@@ -49,5 +45,14 @@ void AProjectile::Tick(float DeltaTime)
 		Destroy();
 	}
 
+}
+
+void AProjectile::ProjectileFire(float Speed, float Damage, float Lifetime)
+{
+	ProjectileSpeed = Speed;
+	ProjectileDamage = Damage;
+	ProjectileLifetime = Lifetime;
+	//start ticking
+	PrimaryActorTick.bCanEverTick = true;
 }
 

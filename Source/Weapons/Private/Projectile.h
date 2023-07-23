@@ -7,7 +7,7 @@
 
 class UCapsuleComponent;
 
-UCLASS()
+UCLASS(abstract)
 class AProjectile : public AActor
 {
 	GENERATED_BODY()
@@ -36,10 +36,12 @@ protected:
 	UFUNCTION()
 		void OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-		virtual void ProjectileMove(float DeltaTime);
+	virtual void ProjectileMove(float DeltaTime) PURE_VIRTUAL(AProjectile::ProjectileMove, ;);
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void ProjectileFire(float Speed, float Damage, float Lifetime);
 
 };
