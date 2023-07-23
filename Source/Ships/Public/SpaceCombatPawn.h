@@ -6,7 +6,7 @@
 #include "SpaceCombatPawn.generated.h"
 
 UCLASS(Config=Game)
-class ASpaceCombatPawn : public APawn
+class SHIPS_API ASpaceCombatPawn : public APawn
 {
 	GENERATED_BODY()
 
