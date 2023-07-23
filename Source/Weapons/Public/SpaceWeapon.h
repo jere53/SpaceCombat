@@ -9,6 +9,7 @@
 
 class UCapsuleComponent;
 class AProjectile;
+class UStaticMeshComponent;
 
 UCLASS()
 class WEAPONS_API ASpaceWeapon : public AActor
@@ -20,6 +21,10 @@ public:
 	ASpaceWeapon();
 
 protected:
+
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		UStaticMeshComponent* WeaponMesh;
 
 	//the kind of projectile this weapon fires
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

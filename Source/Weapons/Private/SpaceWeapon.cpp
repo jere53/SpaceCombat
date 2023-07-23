@@ -3,10 +3,14 @@
 
 #include "SpaceWeapon.h"
 #include "Projectile.h"
+#include "Components/StaticMeshComponent.h"
 
 // Sets default values
 ASpaceWeapon::ASpaceWeapon()
 {
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+	RootComponent = WeaponMesh;
+
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 

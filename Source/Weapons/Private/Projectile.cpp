@@ -11,6 +11,14 @@ AProjectile::AProjectile()
 	// We dont want to start with tick enabled.
 	PrimaryActorTick.bCanEverTick = false;
 
+	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComp"));
+	CollisionCapsule->InitCapsuleSize(1.f, 2.f);
+	CollisionCapsule->BodyInstance.SetCollisionProfileName("Projectile");
+	CollisionCapsule->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+
+	RootComponent = CollisionCapsule;
+
+
 }
 
 // Called when the game starts or when spawned
@@ -18,15 +26,15 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CollisionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OverlapBegin);
+	CollisionCapsule->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 
 }
 
-void AProjectile::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	FDamageEvent DamageEvent;
 	DamageEvent.DamageTypeClass = DamageType;
-	OtherActor->TakeDamage(ProjectileDamage, DamageEvent, nullptr, this);
+	OtherActor->TakeDamage(ProjectileDamage, DamageEvent, GetInstigatorController(), GetInstigator());
 	Destroy();
 }
 
@@ -37,6 +45,7 @@ void AProjectile::Tick(float DeltaTime)
 
 	if (ProjectileLifetime > 0)
 	{
+
 		ProjectileLifetime -= DeltaTime;
 		ProjectileMove(DeltaTime);
 	}
