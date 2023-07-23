@@ -1,15 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "Projectile.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/EngineTypes.h"
-#include "Projectile.h"
+
 
 // Sets default values
 AProjectile::AProjectile()
 {
-	// We dont want to start with tick enabled.
-	PrimaryActorTick.bCanEverTick = false;
+
+	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.bCanEverTick = true;
+	SetActorTickEnabled(false);
 
 	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComp"));
 	CollisionCapsule->InitCapsuleSize(1.f, 2.f);
@@ -62,6 +64,6 @@ void AProjectile::ProjectileFire(float Speed, float Damage, float Lifetime)
 	ProjectileDamage = Damage;
 	ProjectileLifetime = Lifetime;
 	//start ticking
-	PrimaryActorTick.bCanEverTick = true;
+	SetActorTickEnabled(true);
 }
 

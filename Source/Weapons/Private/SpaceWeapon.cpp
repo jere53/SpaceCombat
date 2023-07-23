@@ -4,13 +4,15 @@
 #include "SpaceWeapon.h"
 #include "Projectile.h"
 #include "Components/StaticMeshComponent.h"
-
+#include "Components/ArrowComponent.h"
 // Sets default values
 ASpaceWeapon::ASpaceWeapon()
 {
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 	RootComponent = WeaponMesh;
 
+	WeaponFirePoint = CreateDefaultSubobject<UArrowComponent>(TEXT("WeaponFirePoint"));
+	WeaponFirePoint->SetupAttachment(RootComponent);
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -24,8 +26,8 @@ void ASpaceWeapon::FireWeapon()
 	SpawnParams.Instigator = GetInstigator();
 
 	//placeholder, well add an actual spawn location later
-	FVector BarrelLocation = GetActorLocation() + FVector(10, 0, 0);
-	AProjectile* WeaponProjectile = GetWorld()->SpawnActor<AProjectile>(Projectile, BarrelLocation, FRotator::ZeroRotator, SpawnParams);
+	FVector FireFromLocation = WeaponFirePoint->GetComponentLocation();
+	AProjectile* WeaponProjectile = GetWorld()->SpawnActor<AProjectile>(Projectile, FireFromLocation, FRotator::ZeroRotator, SpawnParams);
 
 	WeaponProjectile->ProjectileFire(ProjectileSpeed, WeaponDamage, WeaponRange / ProjectileSpeed);
 }
@@ -34,7 +36,6 @@ void ASpaceWeapon::FireWeapon()
 void ASpaceWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

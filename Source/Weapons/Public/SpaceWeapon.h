@@ -8,6 +8,7 @@
 
 
 class UCapsuleComponent;
+class UArrowComponent;
 class AProjectile;
 class UStaticMeshComponent;
 
@@ -25,6 +26,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		UStaticMeshComponent* WeaponMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		UArrowComponent* WeaponFirePoint;
 
 	//the kind of projectile this weapon fires
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
