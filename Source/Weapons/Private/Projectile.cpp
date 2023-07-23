@@ -2,6 +2,7 @@
 
 #include "Projectile.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Engine/EngineTypes.h"
 
 
@@ -14,11 +15,12 @@ AProjectile::AProjectile()
 	SetActorTickEnabled(false);
 
 	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComp"));
-	CollisionCapsule->InitCapsuleSize(1.f, 2.f);
-	CollisionCapsule->BodyInstance.SetCollisionProfileName("Projectile");
-	CollisionCapsule->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	CollisionCapsule->InitCapsuleSize(20.f, 20.f);
 
 	RootComponent = CollisionCapsule;
+
+	CollisionCapsule->BodyInstance.SetResponseToAllChannels(ECR_Overlap);
+	
 
 
 }
@@ -28,12 +30,16 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CollisionCapsule->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	CollisionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 
 }
 
-void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+
+void AProjectile::OnOverlapBegin(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));
+
 	FDamageEvent DamageEvent;
 	DamageEvent.DamageTypeClass = DamageType;
 	OtherActor->TakeDamage(ProjectileDamage, DamageEvent, GetInstigatorController(), GetInstigator());
