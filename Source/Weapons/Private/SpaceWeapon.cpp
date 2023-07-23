@@ -27,8 +27,16 @@ void ASpaceWeapon::FireWeapon()
 
 	//placeholder, well add an actual spawn location later
 	FVector FireFromLocation = WeaponFirePoint->GetComponentLocation();
-	AProjectile* WeaponProjectile = GetWorld()->SpawnActor<AProjectile>(Projectile, FireFromLocation, FRotator::ZeroRotator, SpawnParams);
+	AProjectile* WeaponProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileType, FireFromLocation, FRotator::ZeroRotator, SpawnParams);
 
+	if (WeaponProjectile == nullptr)
+	{
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Failed to spawn Projectile"));
+
+		return;
+	}
+	
 	WeaponProjectile->ProjectileFire(ProjectileSpeed, WeaponDamage, WeaponRange / ProjectileSpeed);
 }
 

@@ -21,7 +21,7 @@ AProjectile::AProjectile()
 
 	CollisionCapsule->BodyInstance.SetResponseToAllChannels(ECR_Overlap);
 	
-
+	DamageType = UDamageType::StaticClass();
 
 }
 
@@ -45,6 +45,7 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* HitComponent, AActor* Othe
 	OtherActor->TakeDamage(ProjectileDamage, DamageEvent, GetInstigatorController(), GetInstigator());
 	Destroy();
 }
+
 
 // Called every frame
 void AProjectile::Tick(float DeltaTime)

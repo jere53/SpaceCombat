@@ -32,7 +32,7 @@ protected:
 
 	//the kind of projectile this weapon fires
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		TSubclassOf<AProjectile> Projectile;
+		TSubclassOf<AProjectile> ProjectileType;
 
 	//range in UE units
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
