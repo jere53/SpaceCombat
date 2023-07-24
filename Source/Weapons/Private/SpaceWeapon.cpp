@@ -27,6 +27,8 @@ void ASpaceWeapon::FireWeapon()
 
 	//placeholder, well add an actual spawn location later
 	FVector FireFromLocation = WeaponFirePoint->GetComponentLocation();
+
+
 	AProjectile* WeaponProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileType, FireFromLocation, FRotator::ZeroRotator, SpawnParams);
 
 	if (WeaponProjectile == nullptr)
@@ -37,6 +39,14 @@ void ASpaceWeapon::FireWeapon()
 		return;
 	}
 	
+
+	//move the projectile down a bit so its center is aligned with the canon
+
+	FVector NewLocation = WeaponProjectile->GetActorLocation() - FVector(0, 0, WeaponProjectile->GetProjectileHalfHeight());
+	WeaponProjectile->SetActorLocation(NewLocation);
+
+
+
 	WeaponProjectile->ProjectileFire(ProjectileSpeed, WeaponDamage, WeaponRange / ProjectileSpeed);
 }
 

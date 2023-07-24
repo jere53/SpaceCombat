@@ -74,3 +74,7 @@ void AProjectile::ProjectileFire(float Speed, float Damage, float Lifetime)
 	SetActorTickEnabled(true);
 }
 
+float AProjectile::GetProjectileHalfHeight()
+{
+	return CollisionCapsule->GetUnscaledCapsuleHalfHeight();
+}

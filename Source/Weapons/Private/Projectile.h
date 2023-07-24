@@ -46,4 +46,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void ProjectileFire(float Speed, float Damage, float Lifetime);
+
+	float GetProjectileHalfHeight();
 };
