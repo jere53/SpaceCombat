@@ -42,8 +42,8 @@ void ASpaceWeapon::FireWeapon()
 
 	//move the projectile down a bit so its center is aligned with the canon
 
-	FVector NewLocation = WeaponProjectile->GetActorLocation() - FVector(0, 0, WeaponProjectile->GetProjectileHalfHeight());
-	WeaponProjectile->SetActorLocation(NewLocation);
+	//FVector NewLocation = WeaponProjectile->GetActorLocation() - FVector(0, 0, WeaponProjectile->GetProjectileHalfHeight());
+	//WeaponProjectile->SetActorLocation(NewLocation);
 
 
 
