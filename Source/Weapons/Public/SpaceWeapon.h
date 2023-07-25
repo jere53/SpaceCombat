@@ -23,10 +23,6 @@ public:
 
 protected:
 
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		UStaticMeshComponent* WeaponMesh;
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		UArrowComponent* WeaponFirePoint;
 
@@ -50,9 +46,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float RateOfFire;
 
-	UFUNCTION(BlueprintCallable)
-		void FireWeapon();
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -61,4 +54,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+		void FireWeapon();
 };

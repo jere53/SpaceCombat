@@ -5,6 +5,9 @@
 #include "GameFramework/Pawn.h"
 #include "SpaceCombatPawn.generated.h"
 
+class ASpaceWeapon;
+class UArrowComponent;
+
 UCLASS(Config=Game)
 class SHIPS_API ASpaceCombatPawn : public APawn
 {
@@ -21,12 +24,22 @@ class SHIPS_API ASpaceCombatPawn : public APawn
 	/** Camera component that will be our viewpoint */
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
+
+	/** Array of fire points so that we can set where to spawn the weapons **/
+	UPROPERTY(Category = Weapons, EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", MakeEditWidget = true))
+	TSet<UArrowComponent*> WeaponSpawnPoints;
+
+	/** Array that holds the weapons after they've been spawned**/
+	UPROPERTY(Category = Weapons, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<ASpaceWeapon*> Weapons;
+
 public:
 	ASpaceCombatPawn();
 
 	// Begin AActor overrides
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+	virtual void BeginPlay() override;
 	// End AActor overrides
 
 protected:
@@ -46,6 +59,13 @@ protected:
 
 	/** Bound to dedicated buttons*/
 	void YawRightInput(float Val);
+
+	UFUNCTION()
+	void FireWeapons();
+
+	UFUNCTION()
+	void SpawnWeapons();
+
 
 private:
 
@@ -68,6 +88,11 @@ private:
 	/** How quickly pawn can roll*/
 	UPROPERTY(Category = Roll, EditAnywhere)
 		float RollSpeed;
+
+
+	/** How quickly pawn can roll*/
+	UPROPERTY(Category = Weapons, EditAnywhere)
+		TSubclassOf<class ASpaceWeapon> WeaponType;
 
 	/** Current forward speed */
 	float CurrentForwardSpeed;

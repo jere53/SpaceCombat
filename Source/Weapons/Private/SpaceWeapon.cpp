@@ -8,28 +8,45 @@
 // Sets default values
 ASpaceWeapon::ASpaceWeapon()
 {
-	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
-	RootComponent = WeaponMesh;
-
 	WeaponFirePoint = CreateDefaultSubobject<UArrowComponent>(TEXT("WeaponFirePoint"));
-	WeaponFirePoint->SetupAttachment(RootComponent);
+	RootComponent = WeaponFirePoint;
+
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
 void ASpaceWeapon::FireWeapon()
 {
+	if (!IsValidLowLevel())
+	{
+		return;
+	}
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Called FireWeapon")));
+	}
+
 	//spawn a projectile at weapon and tell it to fire
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = GetInstigator();
+	SpawnParams.Owner = GetOwner();
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	SpawnParams.bNoFail = true;
+	
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Set Params")));
+	}
 
-	//placeholder, well add an actual spawn location later
-	FVector FireFromLocation = WeaponFirePoint->GetComponentLocation();
+	//FVector FireFromLocation = GetActorLocation();
 
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Set Location")));
+	}
 
-	AProjectile* WeaponProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileType, FireFromLocation, FRotator::ZeroRotator, SpawnParams);
+	AProjectile* WeaponProjectile = (AProjectile*) GetWorld()->SpawnActor<AProjectile>(ProjectileType, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
 
 	if (WeaponProjectile == nullptr)
 	{
@@ -38,16 +55,20 @@ void ASpaceWeapon::FireWeapon()
 
 		return;
 	}
-	
 
-	//move the projectile down a bit so its center is aligned with the canon
-
-	//FVector NewLocation = WeaponProjectile->GetActorLocation() - FVector(0, 0, WeaponProjectile->GetProjectileHalfHeight());
-	//WeaponProjectile->SetActorLocation(NewLocation);
-
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Just Before Fire")));
+	}
 
 
 	WeaponProjectile->ProjectileFire(ProjectileSpeed, WeaponDamage, WeaponRange / ProjectileSpeed);
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Fired")));
+	}
+
 }
 
 // Called when the game starts or when spawned

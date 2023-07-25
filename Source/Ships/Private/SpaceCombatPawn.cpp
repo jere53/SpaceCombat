@@ -8,6 +8,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Engine/World.h"
 #include "Engine/StaticMesh.h"
+#include "Weapons/Public/SpaceWeapon.h"
+#include "Components/ArrowComponent.h"
 
 ASpaceCombatPawn::ASpaceCombatPawn()
 {
@@ -80,6 +82,13 @@ void ASpaceCombatPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor
 	SetActorRotation(FQuat::Slerp(CurrentRotation.Quaternion(), HitNormal.ToOrientationQuat(), 0.025f));
 }
 
+void ASpaceCombatPawn::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SpawnWeapons();
+}
+
 
 void ASpaceCombatPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -91,6 +100,7 @@ void ASpaceCombatPawn::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	PlayerInputComponent->BindAxis("MoveUp", this, &ASpaceCombatPawn::MoveUpInput);
 	PlayerInputComponent->BindAxis("RollClockwise", this, &ASpaceCombatPawn::RollClockwiseInput);
 	PlayerInputComponent->BindAxis("YawRight", this, &ASpaceCombatPawn::YawRightInput);
+	PlayerInputComponent->BindAction("FireTrigger", IE_Pressed, this, &ASpaceCombatPawn::FireWeapons);
 }
 
 void ASpaceCombatPawn::ThrottleInput(float Val)
@@ -113,12 +123,14 @@ void ASpaceCombatPawn::ThrottleInput(float Val)
 	// Clamp between MinSpeed and MaxSpeed, limited by Throttle
 	CurrentForwardSpeed = FMath::Clamp(NewForwardSpeed, MinSpeed, CurrentThrottle * MaxSpeed);
 
+	/*
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Throttle: %f"), CurrentThrottle));
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Speed: %f"), CurrentForwardSpeed));
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Acc: %f"), CurrentAcc));
 	}
+	*/
 }
 
 void ASpaceCombatPawn::MoveUpInput(float Val)
@@ -152,4 +164,56 @@ void ASpaceCombatPawn::YawRightInput(float Val)
 
 	// Smoothly interpolate to target yaw speed
 	CurrentYawSpeed = FMath::FInterpTo(CurrentYawSpeed, TargetYawSpeed, GetWorld()->GetDeltaSeconds(), 2.f);
+}
+
+void ASpaceCombatPawn::FireWeapons()
+{
+
+	if (Weapons.Num() == 0)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("NO WEAPONS!")));
+		}
+
+		return;
+	}
+
+	for (ASpaceWeapon* Wep : Weapons)
+	{
+		Wep->FireWeapon();
+	}
+}
+
+void ASpaceCombatPawn::SpawnWeapons()
+{
+	Weapons.Empty();
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Called Spawn !!!")));
+	}
+
+	int32 i = 0;
+	for (UArrowComponent* WeaponSpawnPoint : WeaponSpawnPoints)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = GetOwner();
+		SpawnParams.Instigator = GetInstigator();
+
+		FVector SpawnLocation = WeaponSpawnPoint->GetComponentLocation();
+
+		ASpaceWeapon* Weapon = (ASpaceWeapon*) GetWorld()->SpawnActor<ASpaceWeapon>(WeaponType, SpawnLocation, WeaponSpawnPoint->GetComponentRotation(), SpawnParams);
+		
+		Weapons.Add(Weapon);
+
+		Weapon->AttachToComponent(WeaponSpawnPoint, FAttachmentTransformRules::KeepWorldTransform);
+
+		i++;
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Called Spawn for %d"), i));
+		}
+	}
 }
