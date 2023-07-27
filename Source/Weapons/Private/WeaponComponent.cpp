@@ -13,6 +13,7 @@ UWeaponComponent::UWeaponComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	WeaponFirePoint = CreateDefaultSubobject<UArrowComponent>(TEXT("WeaponFirePoint"));
+	WeaponFirePoint->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 	// ...
 }
 

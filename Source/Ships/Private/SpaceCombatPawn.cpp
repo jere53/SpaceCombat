@@ -8,8 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Engine/World.h"
 #include "Engine/StaticMesh.h"
-#include "Weapons/Public/SpaceWeapon.h"
-#include "Components/ArrowComponent.h"
+#include "Weapons/Public/WeaponComponent.h"
 
 ASpaceCombatPawn::ASpaceCombatPawn()
 {
@@ -85,8 +84,11 @@ void ASpaceCombatPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor
 void ASpaceCombatPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SpawnWeapons();
+	TArray<UActorComponent*> WeaponComponents = GetComponentsByClass(UWeaponComponent::StaticClass());
+	for (UActorComponent* WC : WeaponComponents)
+	{
+		Weapons.Add((UWeaponComponent*)WC);
+	}
 }
 
 
@@ -179,12 +181,13 @@ void ASpaceCombatPawn::FireWeapons()
 		return;
 	}
 
-	for (ASpaceWeapon* Wep : Weapons)
+	for (UWeaponComponent* Wep : Weapons)
 	{
-		Wep->FireWeapon();
+		Wep->FireWeapon(GetOwner(), GetInstigator());
 	}
 }
 
+/*
 void ASpaceCombatPawn::SpawnWeapons()
 {
 	Weapons.Empty();
@@ -217,3 +220,4 @@ void ASpaceCombatPawn::SpawnWeapons()
 		}
 	}
 }
+*/

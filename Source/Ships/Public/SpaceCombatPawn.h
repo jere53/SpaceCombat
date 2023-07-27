@@ -5,8 +5,7 @@
 #include "GameFramework/Pawn.h"
 #include "SpaceCombatPawn.generated.h"
 
-class ASpaceWeapon;
-class UArrowComponent;
+class UWeaponComponent;
 
 UCLASS(Config=Game)
 class SHIPS_API ASpaceCombatPawn : public APawn
@@ -25,13 +24,9 @@ class SHIPS_API ASpaceCombatPawn : public APawn
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
 
-	/** Array of fire points so that we can set where to spawn the weapons **/
-	UPROPERTY(Category = Weapons, EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", MakeEditWidget = true))
-	TSet<UArrowComponent*> WeaponSpawnPoints;
-
 	/** Array that holds the weapons after they've been spawned**/
 	UPROPERTY(Category = Weapons, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TArray<ASpaceWeapon*> Weapons;
+	TArray<UWeaponComponent*> Weapons;
 
 public:
 	ASpaceCombatPawn();
@@ -63,10 +58,6 @@ protected:
 	UFUNCTION()
 	void FireWeapons();
 
-	UFUNCTION()
-	void SpawnWeapons();
-
-
 private:
 
 	/** How quickly forward speed changes */
@@ -88,11 +79,6 @@ private:
 	/** How quickly pawn can roll*/
 	UPROPERTY(Category = Roll, EditAnywhere)
 		float RollSpeed;
-
-
-	/** How quickly pawn can roll*/
-	UPROPERTY(Category = Weapons, EditAnywhere)
-		TSubclassOf<class ASpaceWeapon> WeaponType;
 
 	/** Current forward speed */
 	float CurrentForwardSpeed;
