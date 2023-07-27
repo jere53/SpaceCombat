@@ -30,10 +30,13 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//dont collide with whoever fired the weapon
+	CollisionCapsule->IgnoreActorWhenMoving(GetInstigator(), true);
+	CollisionCapsule->IgnoreActorWhenMoving(GetOwner(), true);
+
 	CollisionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 
 }
-
 
 void AProjectile::OnOverlapBegin(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

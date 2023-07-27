@@ -183,7 +183,7 @@ void ASpaceCombatPawn::FireWeapons()
 
 	for (UWeaponComponent* Wep : Weapons)
 	{
-		Wep->FireWeapon(GetOwner(), GetInstigator());
+		Wep->FireWeapon(GetOwner(), this);
 	}
 }
 

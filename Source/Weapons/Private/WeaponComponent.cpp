@@ -50,9 +50,14 @@ void UWeaponComponent::FireWeapon(AActor* Owner, APawn* Instigator)
 
 	//spawn a projectile at weapon and tell it to fire
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = Owner;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Instigator is %s"), *SpawnParams.Instigator->GetName()));
+	}
+
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.bNoFail = true;
 
 	if (GEngine)
@@ -60,14 +65,8 @@ void UWeaponComponent::FireWeapon(AActor* Owner, APawn* Instigator)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Set Params")));
 	}
 
-	//FVector FireFromLocation = GetActorLocation();
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Set Location")));
-	}
-
-	AProjectile* WeaponProjectile = (AProjectile*)GetWorld()->SpawnActor<AProjectile>(ProjectileType, WeaponFirePoint->GetComponentLocation(), FRotator::ZeroRotator, SpawnParams);
+	AProjectile* WeaponProjectile = (AProjectile*)GetWorld()->SpawnActor<AProjectile>(ProjectileType, 
+		WeaponFirePoint->GetComponentLocation(), WeaponFirePoint->GetComponentRotation(), SpawnParams);
 
 	if (WeaponProjectile == nullptr)
 	{
