@@ -109,6 +109,10 @@ void ASpaceCombatPawn::BeginPlay()
 
 float ASpaceCombatPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Current HP: %f"), HitPoints));
+	}
 	HitPoints -= DamageAmount;
 	return DamageAmount;
 }
