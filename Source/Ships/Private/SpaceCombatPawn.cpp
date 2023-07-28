@@ -50,10 +50,23 @@ ASpaceCombatPawn::ASpaceCombatPawn()
 	CurrentForwardSpeed = 500.f;
 	CurrentThrottle = 0.5f;
 	ThrottleRate = 0.2f;
+
+	HitPoints = 200;
 }
 
 void ASpaceCombatPawn::Tick(float DeltaSeconds)
 {
+
+	if (HitPoints <= 0)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("Dead!")));
+		}
+		Destroy();
+		return;
+	}
+
 	const FVector LocalMove = FVector(CurrentForwardSpeed * DeltaSeconds, 0.f, 0.f);
 
 	// Move plan forwards (with sweep so we stop when we collide with things)
@@ -84,11 +97,20 @@ void ASpaceCombatPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor
 void ASpaceCombatPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	HitPoints = 200;
+
 	TArray<UActorComponent*> WeaponComponents = GetComponentsByClass(UWeaponComponent::StaticClass());
 	for (UActorComponent* WC : WeaponComponents)
 	{
 		Weapons.Add((UWeaponComponent*)WC);
 	}
+}
+
+float ASpaceCombatPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	HitPoints -= DamageAmount;
+	return DamageAmount;
 }
 
 
@@ -186,38 +208,3 @@ void ASpaceCombatPawn::FireWeapons()
 		Wep->FireWeapon(GetOwner(), this);
 	}
 }
-
-/*
-void ASpaceCombatPawn::SpawnWeapons()
-{
-	Weapons.Empty();
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Called Spawn !!!")));
-	}
-
-	int32 i = 0;
-	for (UArrowComponent* WeaponSpawnPoint : WeaponSpawnPoints)
-	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = GetOwner();
-		SpawnParams.Instigator = GetInstigator();
-
-		FVector SpawnLocation = WeaponSpawnPoint->GetComponentLocation();
-
-		ASpaceWeapon* Weapon = (ASpaceWeapon*) GetWorld()->SpawnActor<ASpaceWeapon>(WeaponType, SpawnLocation, WeaponSpawnPoint->GetComponentRotation(), SpawnParams);
-		
-		Weapons.Add(Weapon);
-
-		Weapon->AttachToComponent(WeaponSpawnPoint, FAttachmentTransformRules::KeepWorldTransform);
-
-		i++;
-
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Called Spawn for %d"), i));
-		}
-	}
-}
-*/

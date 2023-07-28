@@ -43,28 +43,29 @@ void UWeaponComponent::FireWeapon(AActor* Owner, APawn* Instigator)
 		return;
 	}
 
+	/*
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Called FireWeapon")));
 	}
-
+	*/
 	//spawn a projectile at weapon and tell it to fire
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Instigator = Instigator;
-
+	/*
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Instigator is %s"), *SpawnParams.Instigator->GetName()));
 	}
-
+	*/
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.bNoFail = true;
-
+	/*
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Set Params")));
 	}
-
+	*/
 	AProjectile* WeaponProjectile = (AProjectile*)GetWorld()->SpawnActor<AProjectile>(ProjectileType, 
 		WeaponFirePoint->GetComponentLocation(), WeaponFirePoint->GetComponentRotation(), SpawnParams);
 
@@ -75,20 +76,20 @@ void UWeaponComponent::FireWeapon(AActor* Owner, APawn* Instigator)
 
 		return;
 	}
-
+	/*
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Just Before Fire")));
 	}
 
-
+	*/
 	WeaponProjectile->ProjectileFire(ProjectileSpeed, WeaponDamage, WeaponRange / ProjectileSpeed);
-
+	/*
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Fired")));
 	}
-
+	*/
 }
 
 

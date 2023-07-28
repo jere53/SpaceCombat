@@ -28,6 +28,10 @@ class SHIPS_API ASpaceCombatPawn : public APawn
 	UPROPERTY(Category = Weapons, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<UWeaponComponent*> Weapons;
 
+	/** Array that holds the weapons after they've been spawned**/
+	UPROPERTY(Category = HP, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		float HitPoints;
+
 public:
 	ASpaceCombatPawn();
 
@@ -35,6 +39,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	virtual void BeginPlay() override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	// End AActor overrides
 
 protected:
