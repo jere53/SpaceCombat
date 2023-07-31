@@ -67,6 +67,9 @@ void ASpaceCombatPawn::Tick(float DeltaSeconds)
 		return;
 	}
 
+	//AI SpacePawns are handled by adding forces from their AI Controller.
+	if (!GetController()->IsPlayerController()) return;
+
 	const FVector LocalMove = FVector(CurrentForwardSpeed * DeltaSeconds, 0.f, 0.f);
 
 	// Move plan forwards (with sweep so we stop when we collide with things)
@@ -100,7 +103,8 @@ void ASpaceCombatPawn::BeginPlay()
 
 	HitPoints = 200;
 
-	TArray<UActorComponent*> WeaponComponents = GetComponentsByClass(UWeaponComponent::StaticClass());
+	TArray<UWeaponComponent*> WeaponComponents;
+	GetComponents(WeaponComponents);
 	for (UActorComponent* WC : WeaponComponents)
 	{
 		Weapons.Add((UWeaponComponent*)WC);
@@ -211,4 +215,27 @@ void ASpaceCombatPawn::FireWeapons()
 	{
 		Wep->FireWeapon(GetOwner(), this);
 	}
+}
+
+FVector ASpaceCombatPawn::GetVelocity()
+{
+	return GetActorForwardVector() *= CurrentForwardSpeed;
+}
+
+float ASpaceCombatPawn::GetMaxSpeed()
+{
+	return MaxSpeed;
+}
+
+FVector ASpaceCombatPawn::GetPosition()
+{
+	return GetActorLocation();
+}
+
+float ASpaceCombatPawn::GetMaxTurnSpeed()
+{
+	//we divide by two to get max turn speed per second (since input lerps over 2 seconds)
+	float MaxDegreeRotInSecond = TurnSpeed / 2;
+
+	return MaxDegreeRotInSecond;
 }

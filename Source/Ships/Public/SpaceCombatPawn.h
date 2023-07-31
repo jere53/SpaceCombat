@@ -3,12 +3,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "AI/Public/BoidInterface.h"
 #include "SpaceCombatPawn.generated.h"
 
 class UWeaponComponent;
 
 UCLASS(Config=Game)
-class SHIPS_API ASpaceCombatPawn : public APawn
+class SHIPS_API ASpaceCombatPawn : public APawn, public IBoidInterface
 {
 	GENERATED_BODY()
 
@@ -74,11 +75,11 @@ private:
 	float TurnSpeed;
 
 	/** Max forward speed */
-	UPROPERTY(Category = Pitch, EditAnywhere)
+	UPROPERTY(Category = Plane, EditAnywhere)
 	float MaxSpeed;
 
 	/** Min forward speed */
-	UPROPERTY(Category=Yaw, EditAnywhere)
+	UPROPERTY(Category=Plane, EditAnywhere)
 	float MinSpeed;
 
 	/** How quickly pawn can roll*/
@@ -105,6 +106,7 @@ private:
 
 	/**Should we invert the input to go up**/
 	bool bInvertUpInput;
+
 public:
 	/** Returns PlaneMesh subobject **/
 	FORCEINLINE class UStaticMeshComponent* GetPlaneMesh() const { return PlaneMesh; }
@@ -112,4 +114,10 @@ public:
 	FORCEINLINE class USpringArmComponent* GetSpringArm() const { return SpringArm; }
 	/** Returns Camera subobject **/
 	FORCEINLINE class UCameraComponent* GetCamera() const { return Camera; }
+
+	// Inherited via IBoidInterface
+	virtual FVector GetVelocity() override;
+	virtual float GetMaxSpeed() override;
+	virtual FVector GetPosition() override;
+	virtual float GetMaxTurnSpeed() override;
 };
