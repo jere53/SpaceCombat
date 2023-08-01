@@ -13,4 +13,23 @@ UCLASS()
 class AI_API AShipAIController : public AAIController
 {
 	GENERATED_BODY()
+public:
+    // Sets default values for this controller's properties
+    AShipAIController();
+
+    // Called when the AI controller possesses a pawn
+    virtual void OnPossess(APawn* InPawn) override;
+
+    // Implement Seek behavior
+    FVector Seek(const FVector& TargetLocation);
+
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
+
+private:
+    // Reference to the spaceship controlled by this AI
+    class IBoidInterface* ControlledSpaceship;
+
+    // The target location to seek
+    FVector TargetLocation;
 };

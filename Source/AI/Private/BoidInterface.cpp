@@ -7,20 +7,44 @@
 
 FVector IBoidInterface::GetVelocity()
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Base Boid method called")));
+	}
 	return FVector();
 }
 
 float IBoidInterface::GetMaxSpeed()
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Base Boid method called")));
+	}
 	return 0.0f;
 }
 
 FVector IBoidInterface::GetPosition()
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Base Boid method called")));
+	}
 	return FVector();
 }
 
 float IBoidInterface::GetMaxTurnSpeed()
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Base Boid method called")));
+	}
 	return 0.0f;
+}
+
+void IBoidInterface::AccelerateTowardDirection(FVector vector)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Base Boid method called")));
+	}
 }
