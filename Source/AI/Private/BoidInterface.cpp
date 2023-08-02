@@ -40,11 +40,3 @@ float IBoidInterface::GetMaxTurnSpeed()
 	}
 	return 0.0f;
 }
-
-void IBoidInterface::AccelerateTowardDirection(FVector vector)
-{
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Base Boid method called")));
-	}
-}

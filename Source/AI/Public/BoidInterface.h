@@ -26,6 +26,4 @@ public:
 	virtual float GetMaxSpeed();
 	virtual FVector GetPosition();
 	virtual float GetMaxTurnSpeed();
-	virtual void AccelerateTowardDirection(FVector vector);
-	class AActor* Actor;
 };

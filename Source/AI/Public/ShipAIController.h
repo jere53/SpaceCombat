@@ -26,6 +26,10 @@ public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
+
+    UPROPERTY(EditAnywhere)
+        float MaxForceMagnitude;
+
 private:
     // Reference to the spaceship controlled by this AI
     class IBoidInterface* ControlledSpaceship;

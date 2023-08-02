@@ -12,38 +12,38 @@ class SHIPS_API AShipPawn : public APawn, public IBoidInterface
 {
 	GENERATED_BODY()
 
+
+	UPROPERTY()
+		FVector Position;
+
+	UPROPERTY()
+		FVector Velocity;
+
 public:
 	// Sets default values for this pawn's properties
 	AShipPawn();
+
+
+	UPROPERTY()
+		float MaxVelocity;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere)
-		class UFloatingPawnMovement* FloatingMovementComponent;
-
-	// Input functions
-	void MoveForward(float AxisValue);
-	void MoveRight(float AxisValue);
-
-	// Movement variables
-	float CurrentForwardSpeed;
-	float CurrentRightSpeed;
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	// Function to set the spaceship's desired direction and accelerate towards it
-	UFUNCTION(BlueprintCallable)
-		void AccelerateTowardsDirection(FVector Direction);
-
-
 	virtual float GetMaxSpeed() override;
-	virtual void AccelerateTowardDirection(FVector D) override;
 	virtual FVector GetVelocity() override;
+	virtual FVector GetPosition() override;
+	virtual float GetMaxTurnSpeed() override;
+
+	UPROPERTY(EditAnywhere)
+		float MaxSpeed;
+
+
+	UPROPERTY(EditAnywhere)
+		float TurnSpeed;
 };
