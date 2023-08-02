@@ -21,7 +21,6 @@ void AShipPawn::BeginPlay()
 void AShipPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	return;
 }
 
 
@@ -44,5 +43,25 @@ FVector AShipPawn::GetPosition()
 float AShipPawn::GetMaxTurnSpeed()
 {
 	return TurnSpeed;
+}
+
+void AShipPawn::SetVelocity(FVector NewValue)
+{
+	Velocity = NewValue;
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("New Velocity Values are: %f %f %f"), Velocity.X, Velocity.Y, Velocity.Z));
+	}
+}
+
+void AShipPawn::SetPosition(FVector NewValue)
+{
+	SetActorLocation(NewValue);
+	FVector NewPosition = GetActorLocation();
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("New Position Values are: %f %f %f"), NewPosition.X, NewPosition.Y, NewPosition.Z));
+	}
 }
 

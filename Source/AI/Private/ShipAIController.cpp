@@ -10,7 +10,7 @@ AShipAIController::AShipAIController()
     TargetLocation = FVector::ZeroVector;
 
 
-    MaxForceMagnitude = 2000;
+    MaxForceMagnitude = 100;
 }
 
 void AShipAIController::OnPossess(APawn* InPawn)
@@ -34,28 +34,51 @@ void AShipAIController::Tick(float DeltaTime)
         FVector Velocity = ControlledSpaceship->GetVelocity();
 
         // Implement Seek behavior and get the steering force vector
-        FVector Steering = Seek(TargetLocation);
+        FVector Steering = Seek(TargetLocation, 100);
+
+        if (Steering.IsNearlyZero(0.001)) return;
+
         Steering = Steering.GetClampedToMaxSize(MaxForceMagnitude);
 
         Steering *= ControlledSpaceship->GetMaxTurnSpeed();
 
         Velocity += Steering;
+        
         Velocity = Velocity.GetClampedToMaxSize(ControlledSpaceship->GetMaxSpeed());
+
+        Velocity *= DeltaTime;
 
         Position += Velocity;
 
-        GetPawn()->SetActorLocation(Position);
+        ControlledSpaceship->SetVelocity(Velocity);
+        ControlledSpaceship->SetPosition(Position);
     }
 }
 
-FVector AShipAIController::Seek(const FVector& Target)
+FVector AShipAIController::Seek(const FVector& Target, int SlowdownRadius)
 {
     // Get the current position of the spaceship
     FVector CurrentLocation = ControlledSpaceship->GetPosition();
 
-    // Calculate the desired velocity (direction towards the target)
-    FVector DesiredVelocity = (Target - CurrentLocation).GetSafeNormal() * ControlledSpaceship->GetMaxSpeed();
+    // Calculate the distance to the target
+    float DistanceToTarget = FVector::Distance(CurrentLocation, Target);
 
+    FVector DesiredVelocity;
+    if (DistanceToTarget > SlowdownRadius)
+    {
+        DesiredVelocity = (Target - CurrentLocation).GetSafeNormal() * ControlledSpaceship->GetMaxSpeed();
+    }
+    else
+    {
+        // Gradually slow down within the slowdown radius
+        float SpeedFactor = DistanceToTarget / SlowdownRadius;
+        DesiredVelocity = (Target - CurrentLocation).GetSafeNormal() * ControlledSpaceship->GetMaxSpeed();
+
+        if (DesiredVelocity.IsNearlyZero(1.f))
+        {
+            return FVector::ZeroVector;
+        }
+    }
     // Calculate the acceleration needed to reach the desired velocity
     FVector Steering = DesiredVelocity - ControlledSpaceship->GetVelocity();
 

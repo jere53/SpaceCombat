@@ -39,6 +39,8 @@ public:
 	virtual FVector GetVelocity() override;
 	virtual FVector GetPosition() override;
 	virtual float GetMaxTurnSpeed() override;
+	virtual void SetVelocity(FVector NewValue);
+	virtual void SetPosition(FVector NewValue);
 
 	UPROPERTY(EditAnywhere)
 		float MaxSpeed;

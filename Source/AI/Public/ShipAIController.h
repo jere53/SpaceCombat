@@ -21,7 +21,7 @@ public:
     virtual void OnPossess(APawn* InPawn) override;
 
     // Implement Seek behavior
-    FVector Seek(const FVector& TargetLocation);
+    FVector Seek(const FVector& TargetLocation, int SlowdownRadius);
 
     // Called every frame
     virtual void Tick(float DeltaTime) override;

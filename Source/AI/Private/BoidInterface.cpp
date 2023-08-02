@@ -40,3 +40,13 @@ float IBoidInterface::GetMaxTurnSpeed()
 	}
 	return 0.0f;
 }
+
+void IBoidInterface::SetVelocity(FVector NewValue)
+{
+	
+}
+
+void IBoidInterface::SetPosition(FVector NewValue)
+{
+
+}

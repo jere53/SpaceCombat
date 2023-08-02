@@ -26,4 +26,7 @@ public:
 	virtual float GetMaxSpeed();
 	virtual FVector GetPosition();
 	virtual float GetMaxTurnSpeed();
+
+	virtual void SetVelocity(FVector NewValue);
+	virtual void SetPosition(FVector NewValue);
 };
