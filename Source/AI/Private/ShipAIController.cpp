@@ -19,13 +19,12 @@ void AShipAIController::OnPossess(APawn* InPawn)
 
     // Start the Seek behavior (you can trigger this behavior based on game events)
     // For this example, let's set the target location to (1000, 0, 0)
-    TargetLocation = FVector(1000.0f, 0.0f, 0.0f);
+    TargetLocation = FVector(1000.0f, 1000.f, 3040.f);
 }
 
 void AShipAIController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
     if (ControlledSpaceship)
     {
         // Implement Seek behavior and get the acceleration vector
@@ -33,6 +32,7 @@ void AShipAIController::Tick(float DeltaTime)
 
         // Apply the acceleration vector to the spaceship
         ControlledSpaceship->AccelerateTowardDirection(Acceleration);
+
     }
 }
 

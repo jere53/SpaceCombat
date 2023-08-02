@@ -25,13 +25,8 @@ void AShipPawn::BeginPlay()
 void AShipPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// Move the spaceship based on player input
-	FVector ForwardVector = GetActorForwardVector();
-	FVector RightVector = GetActorRightVector();
-	FVector MovementDirection = (ForwardVector * CurrentForwardSpeed) + (RightVector * CurrentRightSpeed);
-	FloatingMovementComponent->AddInputVector(MovementDirection);
-
+	((UPrimitiveComponent*)RootComponent)->AddForce(GetActorForwardVector() * GetMaxSpeed(), NAME_None, true);
+	return;
 }
 
 // Called to bind functionality to input
@@ -58,17 +53,27 @@ void AShipPawn::MoveRight(float AxisValue)
 }
 
 void AShipPawn::AccelerateTowardsDirection(FVector Direction)
-{
+{ 
+	
 	// Calculate the rotation needed to face the desired direction
 	FVector CurrentForwardVector = GetActorForwardVector();
 	FRotator TargetRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), 3.0f);
-
+	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), .5f);
+	/*
 	// Apply the new rotation to the spaceship
 	SetActorRotation(NewRotation);
 
 	// Accelerate the spaceship forward
 	CurrentForwardSpeed = 1.0f; // Set the desired forward speed here
+
+	FVector MovementDirection = (CurrentForwardVector * CurrentForwardSpeed);
+	FloatingMovementComponent->AddInputVector(Direction);
+	GetController()->SetControlRotation(NewRotation);
+	//FloatingMovementComponent->MoveUpdatedComponent(MovementDirection, TargetRotation, true);
+	*/
+
+	//((UPrimitiveComponent*)RootComponent)->SetAllPhysicsRotation(NewRotation);
+	((UPrimitiveComponent*)RootComponent)->AddForce(Direction, NAME_None, true);
 }
 
 float AShipPawn::GetMaxSpeed()
@@ -87,6 +92,6 @@ void AShipPawn::AccelerateTowardDirection(FVector D)
 
 FVector AShipPawn::GetVelocity()
 {
-	return FVector(FloatingMovementComponent->Velocity);
+	return ((UPrimitiveComponent*)RootComponent)->GetPhysicsLinearVelocity();
 }
 
