@@ -8,9 +8,6 @@ AShipAIController::AShipAIController()
 {
     // Initialize the TargetLocation to a default value
     TargetLocation = FVector::ZeroVector;
-
-
-    MaxForceMagnitude = 100;
 }
 
 void AShipAIController::OnPossess(APawn* InPawn)
@@ -34,17 +31,20 @@ void AShipAIController::Tick(float DeltaTime)
         FVector Velocity = ControlledSpaceship->GetVelocity();
 
         // Implement Seek behavior and get the steering force vector
-        FVector Steering = Seek(TargetLocation, 100);
+        FVector Steering;
 
-        if (Steering.IsNearlyZero(0.001)) return;
-
-        Steering = Steering.GetClampedToMaxSize(MaxForceMagnitude);
-
-        Steering *= ControlledSpaceship->GetMaxTurnSpeed();
-
-        Velocity += Steering;
+        if (FVector::Dist(TargetLocation, Position) < 10.f)
+        {
+            TargetLocation = (FMath::VRand() * 10000) + Position;
+        }
         
-        Velocity = Velocity.GetClampedToMaxSize(ControlledSpaceship->GetMaxSpeed());
+        Seek(TargetLocation, 100);
+
+        //Steering = Steering.GetClampedToMaxSize(MaxForceMagnitude);
+
+        FVector EffectiveSteering = FMath::VInterpNormalRotationTo(GetPawn()->GetActorForwardVector(), Steering.GetSafeNormal(), DeltaTime, ControlledSpaceship->GetMaxTurnSpeed());
+
+        Velocity += (EffectiveSteering * Steering.Size()).GetClampedToMaxSize(ControlledSpaceship->GetMaxSpeed());
 
         Velocity *= DeltaTime;
 
@@ -73,11 +73,6 @@ FVector AShipAIController::Seek(const FVector& Target, int SlowdownRadius)
         // Gradually slow down within the slowdown radius
         float SpeedFactor = DistanceToTarget / SlowdownRadius;
         DesiredVelocity = (Target - CurrentLocation).GetSafeNormal() * ControlledSpaceship->GetMaxSpeed();
-
-        if (DesiredVelocity.IsNearlyZero(1.f))
-        {
-            return FVector::ZeroVector;
-        }
     }
     // Calculate the acceleration needed to reach the desired velocity
     FVector Steering = DesiredVelocity - ControlledSpaceship->GetVelocity();

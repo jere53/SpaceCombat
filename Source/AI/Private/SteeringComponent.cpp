@@ -42,7 +42,9 @@ void USteeringComponent::BeginPlay()
 		}
 	}
 
-	Seek(FVector(0, 0, 0), 20);
+	FVector Target = FVector(0, 0, 0);
+
+	Seek(Target, 20);
 
 
 
@@ -59,9 +61,11 @@ void USteeringComponent::BeginPlay()
 FVector USteeringComponent::DoSeek(FVector Target, int SlowingRadius)
 {
 	if (!ControlledBoid || !IsValidLowLevel()) return FVector(0, 0, 0);
+
 	//get a vector pointing at the Target
 	FVector DesiredVelocity = Target - (ControlledBoid->GetPosition());
 	float DistanceToTarget = DesiredVelocity.Size();
+
 	DesiredVelocity.Normalize();
 	if (DistanceToTarget <= SlowingRadius)
 	{
@@ -83,6 +87,22 @@ FVector USteeringComponent::DoSeek(FVector Target, int SlowingRadius)
 void USteeringComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("tickingf")));
+	}
+
+	if (FVector::Dist(GetOwner()->GetActorLocation(), FVector(0, 0, 0)) < 200.f)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("arrives")));
+		}
+
+		//if reached target, move to another random point within 300 radius
+		Seek(FMath::VRand() * 300, 20);
+	}
 
 	// ...
 }
