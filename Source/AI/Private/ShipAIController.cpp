@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ShipAIController.h"
-#include "NavigationSystem.h"
 #include "BoidInterface.h"
 
 AShipAIController::AShipAIController()
@@ -29,29 +28,26 @@ void AShipAIController::Tick(float DeltaTime)
     {
         FVector Position = ControlledSpaceship->GetPosition();
         FVector Velocity = ControlledSpaceship->GetVelocity();
-
-        // Implement Seek behavior and get the steering force vector
-        FVector Steering;
+        
 
         if (FVector::Dist(TargetLocation, Position) < 10.f)
         {
             TargetLocation = (FMath::VRand() * 10000) + Position;
         }
         
-        Seek(TargetLocation, 100);
-
-        //Steering = Steering.GetClampedToMaxSize(MaxForceMagnitude);
+        FVector Steering = Seek(TargetLocation, 100);
 
         FVector EffectiveSteering = FMath::VInterpNormalRotationTo(GetPawn()->GetActorForwardVector(), Steering.GetSafeNormal(), DeltaTime, ControlledSpaceship->GetMaxTurnSpeed());
-
-        Velocity += (EffectiveSteering * Steering.Size()).GetClampedToMaxSize(ControlledSpaceship->GetMaxSpeed());
+        
+        Velocity += (EffectiveSteering);
 
         Velocity *= DeltaTime;
 
-        Position += Velocity;
-
         ControlledSpaceship->SetVelocity(Velocity);
-        ControlledSpaceship->SetPosition(Position);
+    }
+    else
+    {
+         UE_LOG(LogTemp, Error, TEXT("AI Controller controls no valid pawn!"));
     }
 }
 
@@ -72,11 +68,11 @@ FVector AShipAIController::Seek(const FVector& Target, int SlowdownRadius)
     {
         // Gradually slow down within the slowdown radius
         float SpeedFactor = DistanceToTarget / SlowdownRadius;
-        DesiredVelocity = (Target - CurrentLocation).GetSafeNormal() * ControlledSpaceship->GetMaxSpeed();
+        DesiredVelocity = (Target - CurrentLocation).GetSafeNormal() * ControlledSpaceship->GetMaxSpeed() * SpeedFactor;
     }
     // Calculate the acceleration needed to reach the desired velocity
     FVector Steering = DesiredVelocity - ControlledSpaceship->GetVelocity();
 
-    // Return the acceleration vector
+    // Return the steering vector
     return Steering;
 }

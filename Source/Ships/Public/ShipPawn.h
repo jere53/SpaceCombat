@@ -12,21 +12,9 @@ class SHIPS_API AShipPawn : public APawn, public IBoidInterface
 {
 	GENERATED_BODY()
 
-
-	UPROPERTY()
-		FVector Position;
-
-	UPROPERTY()
-		FVector Velocity;
-
 public:
 	// Sets default values for this pawn's properties
 	AShipPawn();
-
-
-	UPROPERTY()
-		float MaxVelocity;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
