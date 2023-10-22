@@ -17,8 +17,7 @@ void AShipAIController::OnPossess(APawn* InPawn)
     ControlledSpaceship = Cast<IBoidInterface>(InPawn);
 
     // Start the Seek behavior (you can trigger this behavior based on game events)
-    // For this example, let's set the target location to (1000, 0, 0)
-    TargetLocation = FVector(1000.0f, 1000.f, 3040.f);
+    
 }
 
 void AShipAIController::Tick(float DeltaTime)
@@ -28,22 +27,21 @@ void AShipAIController::Tick(float DeltaTime)
     {
         FVector Position = ControlledSpaceship->GetPosition();
         FVector Velocity = ControlledSpaceship->GetVelocity();
-        
+        TargetLocation = FVector(100000.0f, 100000.f, 3000040.f);
 
-        if (FVector::Dist(TargetLocation, Position) < 10.f)
-        {
-            TargetLocation = (FMath::VRand() * 10000) + Position;
-        }
+        DrawDebugLine(GetWorld(), Position, TargetLocation, FColor::Blue);
         
         FVector Steering = Seek(TargetLocation, 100);
 
+        DrawDebugLine(GetWorld(), Position, Steering, FColor::Green);
+
         FVector EffectiveSteering = FMath::VInterpNormalRotationTo(GetPawn()->GetActorForwardVector(), Steering.GetSafeNormal(), DeltaTime, ControlledSpaceship->GetMaxTurnSpeed());
+
+        DrawDebugLine(GetWorld(), Position, EffectiveSteering, FColor::Red);
         
         Velocity += (EffectiveSteering);
 
-        Velocity *= DeltaTime;
-
-        ControlledSpaceship->SetVelocity(Velocity);
+        ControlledSpaceship->SetVelocity(Velocity * 1000);
     }
     else
     {

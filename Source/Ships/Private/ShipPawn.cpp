@@ -48,7 +48,8 @@ float AShipPawn::GetMaxTurnSpeed()
 
 void AShipPawn::SetVelocity(FVector NewValue)
 {
-	Cast<UPrimitiveComponent>(RootComponent)->SetPhysicsLinearVelocity(NewValue*100000);
+	DrawDebugLine(GetWorld(), GetActorLocation(), NewValue, FColor::Yellow);
+	Cast<UPrimitiveComponent>(RootComponent)->AddForce(NewValue, NAME_None, true);
 	
 }
 
