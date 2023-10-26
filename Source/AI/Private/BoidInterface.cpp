@@ -32,13 +32,22 @@ FVector IBoidInterface::GetPosition()
 	return FVector();
 }
 
-float IBoidInterface::GetMaxTurnSpeed()
+float IBoidInterface::GetMaxAcceleration()
 {
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Base Boid method called")));
 	}
 	return 0.0f;
+}
+
+FVector IBoidInterface::GetTarget()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Base Boid method called")));
+	}
+	return FVector::Zero();
 }
 
 void IBoidInterface::SetVelocity(FVector NewValue)

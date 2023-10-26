@@ -5,8 +5,8 @@
 
 AShipAIController::AShipAIController()
 {
-    // Initialize the TargetLocation to a default value
-    TargetLocation = FVector::ZeroVector;
+    MaxForceMagnitude = 0;
+    ControlledSpaceship = nullptr;
 }
 
 void AShipAIController::OnPossess(APawn* InPawn)
@@ -25,23 +25,26 @@ void AShipAIController::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     if (ControlledSpaceship)
     {
-        FVector Position = ControlledSpaceship->GetPosition();
+        const FVector& Position = ControlledSpaceship->GetPosition();
+        const FVector& Target = ControlledSpaceship->GetTarget();
         FVector Velocity = ControlledSpaceship->GetVelocity();
-        TargetLocation = FVector(100000.0f, 100000.f, 3000040.f);
 
-        DrawDebugLine(GetWorld(), Position, TargetLocation, FColor::Blue);
+        DrawDebugLine(GetWorld(), Position, Target, FColor::Blue);
         
-        FVector Steering = Seek(TargetLocation, 100);
-
-        DrawDebugLine(GetWorld(), Position, Steering, FColor::Green);
-
-        FVector EffectiveSteering = FMath::VInterpNormalRotationTo(GetPawn()->GetActorForwardVector(), Steering.GetSafeNormal(), DeltaTime, ControlledSpaceship->GetMaxTurnSpeed());
-
-        DrawDebugLine(GetWorld(), Position, EffectiveSteering, FColor::Red);
+        const FVector& SteeringForce = Seek(Target, 2000);
+        const FVector& Acceleration = SteeringForce; //we could divide by mass if we want;
         
-        Velocity += (EffectiveSteering);
+        //const FVector& EffectiveSteering = FMath::VInterpNormalRotationTo(GetPawn()->GetActorForwardVector(), Steering.GetSafeNormal(), DeltaTime, ControlledSpaceship->GetMaxForce());
 
-        ControlledSpaceship->SetVelocity(Velocity * 1000);
+        DrawDebugLine(GetWorld(), Position, Acceleration, FColor::Red);
+        
+        Velocity += Acceleration * DeltaTime;
+        
+        Velocity.GetClampedToMaxSize(ControlledSpaceship->GetMaxSpeed());
+        
+
+        ControlledSpaceship->SetVelocity(Velocity);
+        ControlledSpaceship->SetPosition(Position + Velocity);
     }
     else
     {
@@ -49,28 +52,34 @@ void AShipAIController::Tick(float DeltaTime)
     }
 }
 
-FVector AShipAIController::Seek(const FVector& Target, int SlowdownRadius)
+FVector AShipAIController::Seek(const FVector& Target, int SlowdownRadius) const
 {
     // Get the current position of the spaceship
-    FVector CurrentLocation = ControlledSpaceship->GetPosition();
+    const FVector& CurrentLocation = ControlledSpaceship->GetPosition();
 
     // Calculate the distance to the target
-    float DistanceToTarget = FVector::Distance(CurrentLocation, Target);
+    const float& DistanceToTarget = FVector::Distance(CurrentLocation, Target);
 
     FVector DesiredVelocity;
     if (DistanceToTarget > SlowdownRadius)
     {
-        DesiredVelocity = (Target - CurrentLocation).GetSafeNormal() * ControlledSpaceship->GetMaxSpeed();
+        DesiredVelocity = (Target - CurrentLocation).GetUnsafeNormal() * ControlledSpaceship->GetMaxSpeed();
     }
     else
     {
         // Gradually slow down within the slowdown radius
-        float SpeedFactor = DistanceToTarget / SlowdownRadius;
-        DesiredVelocity = (Target - CurrentLocation).GetSafeNormal() * ControlledSpaceship->GetMaxSpeed() * SpeedFactor;
+        const float SlowedSpeed = DistanceToTarget / SlowdownRadius;
+        const float& SpeedFactor = SlowedSpeed > 1 ? SlowedSpeed : 0 ;
+        DesiredVelocity = (Target - CurrentLocation).GetUnsafeNormal() * ControlledSpaceship->GetMaxSpeed() * SpeedFactor;
     }
     // Calculate the acceleration needed to reach the desired velocity
-    FVector Steering = DesiredVelocity - ControlledSpaceship->GetVelocity();
+    const FVector& Steering = DesiredVelocity - ControlledSpaceship->GetVelocity();
+
+    
+    UE_LOG(LogTemp, Log, TEXT("SPEED TGT: %f %f %f"), Steering.X, Steering.Y, Steering.Z);
+
+    DrawDebugLine(GetWorld(), ControlledSpaceship->GetPosition(), Steering, FColor::Green);
 
     // Return the steering vector
-    return Steering;
+    return Steering.GetClampedToMaxSize(ControlledSpaceship->GetMaxAcceleration());
 }

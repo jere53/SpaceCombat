@@ -21,7 +21,7 @@ public:
     virtual void OnPossess(APawn* InPawn) override;
 
     // Implement Seek behavior
-    FVector Seek(const FVector& TargetLocation, int SlowdownRadius);
+    FVector Seek(const FVector& TargetLocation, int SlowdownRadius) const;
 
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -33,7 +33,4 @@ public:
 private:
     // Reference to the spaceship controlled by this AI
     class IBoidInterface* ControlledSpaceship;
-
-    // The target location to seek
-    FVector TargetLocation;
 };

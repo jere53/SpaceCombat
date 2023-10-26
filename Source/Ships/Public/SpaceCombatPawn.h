@@ -119,5 +119,5 @@ public:
 	virtual FVector GetVelocity() override;
 	virtual float GetMaxSpeed() override;
 	virtual FVector GetPosition() override;
-	virtual float GetMaxTurnSpeed() override;
+	virtual float GetMaxAcceleration() override;
 };

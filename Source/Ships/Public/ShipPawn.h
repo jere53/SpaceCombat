@@ -19,6 +19,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	FVector Position;
+	FVector Velocity;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -26,14 +29,17 @@ public:
 	virtual float GetMaxSpeed() override;
 	virtual FVector GetVelocity() override;
 	virtual FVector GetPosition() override;
-	virtual float GetMaxTurnSpeed() override;
-	virtual void SetVelocity(FVector NewValue);
-	virtual void SetPosition(FVector NewValue);
+	virtual float GetMaxAcceleration() override;
+	virtual void SetVelocity(FVector NewValue) override;
+	virtual void SetPosition(FVector NewValue) override;
+	virtual FVector GetTarget() override; 
 
 	UPROPERTY(EditAnywhere)
-		float MaxSpeed;
-
+		AActor* Target; 
+	
+	UPROPERTY(EditAnywhere)
+	float MaxSpeed;
 
 	UPROPERTY(EditAnywhere)
-		float TurnSpeed;
+		float MaxAcceleration;
 };

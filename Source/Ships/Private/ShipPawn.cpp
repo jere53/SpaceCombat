@@ -8,8 +8,9 @@ AShipPawn::AShipPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	MaxSpeed = 1000.f;
-	TurnSpeed = 200.f;
-
+	MaxAcceleration = 200.f;
+	Target = nullptr;
+	Velocity = FVector(50, 0, 0);
 }
 
 // Called when the game starts or when spawned
@@ -33,7 +34,7 @@ float AShipPawn::GetMaxSpeed()
 
 FVector AShipPawn::GetVelocity()
 {
-	return RootComponent->ComponentVelocity;
+	return Velocity;
 }
 
 FVector AShipPawn::GetPosition()
@@ -41,20 +42,25 @@ FVector AShipPawn::GetPosition()
 	return GetActorLocation();
 }
 
-float AShipPawn::GetMaxTurnSpeed()
+float AShipPawn::GetMaxAcceleration()
 {
-	return TurnSpeed;
+	return MaxAcceleration;
 }
 
 void AShipPawn::SetVelocity(FVector NewValue)
 {
 	DrawDebugLine(GetWorld(), GetActorLocation(), NewValue, FColor::Yellow);
-	Cast<UPrimitiveComponent>(RootComponent)->AddForce(NewValue, NAME_None, true);
-	
+	Velocity = NewValue;
 }
 
 void AShipPawn::SetPosition(FVector NewValue)
 {
 	SetActorLocation(NewValue);
+}
+
+FVector AShipPawn::GetTarget()
+{
+	if(!Target->IsValidLowLevel()) return IBoidInterface::GetTarget();
+	return Target->GetActorLocation();
 }
 

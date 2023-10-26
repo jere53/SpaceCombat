@@ -232,7 +232,7 @@ FVector ASpaceCombatPawn::GetPosition()
 	return GetActorLocation();
 }
 
-float ASpaceCombatPawn::GetMaxTurnSpeed()
+float ASpaceCombatPawn::GetMaxAcceleration()
 {
 	//we divide by two to get max turn speed per second (since input lerps over 2 seconds)
 	float MaxDegreeRotInSecond = TurnSpeed / 2;
