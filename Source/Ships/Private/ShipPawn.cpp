@@ -10,7 +10,7 @@ AShipPawn::AShipPawn()
 	MaxSpeed = 1000.f;
 	MaxAcceleration = 200.f;
 	Target = nullptr;
-	Velocity = FVector(50, 0, 0);
+	Velocity = FVector(5, 0, 0);
 }
 
 // Called when the game starts or when spawned

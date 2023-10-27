@@ -31,7 +31,7 @@ void AShipAIController::Tick(float DeltaTime)
 
         DrawDebugLine(GetWorld(), Position, Target, FColor::Blue);
         
-        const FVector& SteeringForce = Seek(Target, 2000);
+        const FVector& SteeringForce = Wander();
         const FVector& Acceleration = SteeringForce; //we could divide by mass if we want;
         
         //const FVector& EffectiveSteering = FMath::VInterpNormalRotationTo(GetPawn()->GetActorForwardVector(), Steering.GetSafeNormal(), DeltaTime, ControlledSpaceship->GetMaxForce());
@@ -50,6 +50,13 @@ void AShipAIController::Tick(float DeltaTime)
     {
          UE_LOG(LogTemp, Error, TEXT("AI Controller controls no valid pawn!"));
     }
+}
+
+void AShipAIController::SetAngle(FVector& vector, float Angle)
+{
+    const float Len = vector.Length();  
+    const FVector Angled = FVector(cos(Angle), 1, sin(Angle)) * Len;
+    vector = Angled;
 }
 
 FVector AShipAIController::Seek(const FVector& Target, int SlowdownRadius) const
@@ -82,4 +89,22 @@ FVector AShipAIController::Seek(const FVector& Target, int SlowdownRadius) const
 
     // Return the steering vector
     return Steering.GetClampedToMaxSize(ControlledSpaceship->GetMaxAcceleration());
+}
+
+FVector AShipAIController::Flee(const FVector& TargetLocation, float DesiredMinDistance) const
+{
+    if(!ControlledSpaceship) return FVector::Zero();
+    if(FVector::Distance(TargetLocation, ControlledSpaceship->GetPosition()) > DesiredMinDistance) return FVector::Zero(); 
+    return -1 * Seek(TargetLocation, 0);
+}
+
+FVector AShipAIController::Wander()
+{
+    if(!ControlledSpaceship) return  FVector::Zero();
+    const FVector CircleCenter = ControlledSpaceship->GetVelocity().GetUnsafeNormal() * CircleDistance;
+    FVector DisplacementAcc = FVector(0,1,0) * CircleRadios;
+
+    WanderAngle += FMath::RandRange(0.f, AngleChange) - AngleChange/2;
+    SetAngle(DisplacementAcc, WanderAngle);
+    return (CircleCenter + DisplacementAcc);
 }
