@@ -10,7 +10,7 @@ AShipPawn::AShipPawn()
 	MaxSpeed = 1000.f;
 	MaxAcceleration = 200.f;
 	Target = nullptr;
-	Velocity = FVector(5, 0, 0);
+	Velocity = FVector(50, 0, 0);
 }
 
 // Called when the game starts or when spawned
@@ -51,6 +51,8 @@ void AShipPawn::SetVelocity(FVector NewValue)
 {
 	DrawDebugLine(GetWorld(), GetActorLocation(), NewValue, FColor::Yellow);
 	Velocity = NewValue;
+	const FRotator NewRot = (Velocity - GetActorForwardVector()).Rotation();
+	SetActorRotation(NewRot);
 }
 
 void AShipPawn::SetPosition(FVector NewValue)

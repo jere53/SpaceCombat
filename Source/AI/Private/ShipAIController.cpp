@@ -31,7 +31,7 @@ void AShipAIController::Tick(float DeltaTime)
 
         DrawDebugLine(GetWorld(), Position, Target, FColor::Blue);
         
-        const FVector& SteeringForce = Wander();
+        const FVector& SteeringForce = Seek(Target, 100);
         const FVector& Acceleration = SteeringForce; //we could divide by mass if we want;
         
         //const FVector& EffectiveSteering = FMath::VInterpNormalRotationTo(GetPawn()->GetActorForwardVector(), Steering.GetSafeNormal(), DeltaTime, ControlledSpaceship->GetMaxForce());
