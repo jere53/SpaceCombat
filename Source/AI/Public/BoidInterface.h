@@ -22,11 +22,12 @@ class AI_API IBoidInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	static UClass* StaticClass();
-	virtual FVector GetVelocity();
-	virtual float GetMaxSpeed();
-	virtual FVector GetPosition();
-	virtual float GetMaxAcceleration();
-	virtual FVector GetTarget();
+	virtual FVector GetVelocity() const;
+	virtual float GetMaxSpeed() const;
+	virtual FVector GetPosition() const;
+	virtual float GetMaxAcceleration() const;
+	virtual AActor* GetTarget() const;
+	virtual AActor* GetFleeTarget() const;
 
 	virtual void SetVelocity(FVector NewValue);
 	virtual void SetPosition(FVector NewValue);

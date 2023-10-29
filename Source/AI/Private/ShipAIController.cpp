@@ -26,12 +26,31 @@ void AShipAIController::Tick(float DeltaTime)
     if (ControlledSpaceship)
     {
         const FVector& Position = ControlledSpaceship->GetPosition();
-        const FVector& Target = ControlledSpaceship->GetTarget();
+        const FVector& TargetLocation = ControlledSpaceship->GetTarget()->GetActorLocation();
         FVector Velocity = ControlledSpaceship->GetVelocity();
 
-        DrawDebugLine(GetWorld(), Position, Target, FColor::Blue);
+        DrawDebugLine(GetWorld(), Position, TargetLocation, FColor::Blue);
+        FVector SteeringForce;
+        IBoidInterface* TargetBoid = Cast<IBoidInterface>(ControlledSpaceship->GetTarget());
+
+        if(TargetBoid == nullptr)
+        {
+            auto fleeTgt = ControlledSpaceship->GetFleeTarget();
+            if(fleeTgt == nullptr)
+            {
+                SteeringForce = Seek(TargetLocation, 100.f);
+            }
+            else
+            {
+                SteeringForce = Flee(ControlledSpaceship->GetFleeTarget()->GetActorLocation(), 10000.f);
+                SteeringForce += Wander();
+            }
+        }
+        else
+        {
+            SteeringForce = Pursue(*TargetBoid, DeltaTime);
+        }
         
-        const FVector& SteeringForce = Seek(Target, 100);
         const FVector& Acceleration = SteeringForce; //we could divide by mass if we want;
         
         //const FVector& EffectiveSteering = FMath::VInterpNormalRotationTo(GetPawn()->GetActorForwardVector(), Steering.GetSafeNormal(), DeltaTime, ControlledSpaceship->GetMaxForce());
@@ -40,7 +59,7 @@ void AShipAIController::Tick(float DeltaTime)
         
         Velocity += Acceleration * DeltaTime;
         
-        Velocity.GetClampedToMaxSize(ControlledSpaceship->GetMaxSpeed());
+        Velocity = Velocity.GetClampedToMaxSize(ControlledSpaceship->GetMaxSpeed());
         
 
         ControlledSpaceship->SetVelocity(Velocity);
@@ -102,9 +121,23 @@ FVector AShipAIController::Wander()
 {
     if(!ControlledSpaceship) return  FVector::Zero();
     const FVector CircleCenter = ControlledSpaceship->GetVelocity().GetUnsafeNormal() * CircleDistance;
-    FVector DisplacementAcc = FVector(0,1,0) * CircleRadios;
+    FVector DisplacementAcc = FVector(1,1,1) * CircleRadios;
 
     WanderAngle += FMath::RandRange(0.f, AngleChange) - AngleChange/2;
     SetAngle(DisplacementAcc, WanderAngle);
     return (CircleCenter + DisplacementAcc);
+}
+
+FVector AShipAIController::Pursue(const IBoidInterface& target, float DeltaTime) const
+{
+    const float PredictionThreshold = (FVector::Distance(target.GetPosition(), GetPawn()->GetActorLocation()) / target.GetMaxSpeed()) * DeltaTime;
+    const FVector& FuturePos = target.GetPosition() + target.GetVelocity() * PredictionThreshold;
+    return Seek(FuturePos, 1000.f);
+}
+
+FVector AShipAIController::Evade(const IBoidInterface& target, float DeltaTime) const
+{
+    const float PredictionThreshold = (FVector::Distance(target.GetPosition(), GetPawn()->GetActorLocation()) / target.GetMaxSpeed()) * DeltaTime;
+    const FVector& FuturePos = target.GetPosition() + target.GetVelocity() * PredictionThreshold;
+    return Flee(FuturePos, 10000.f);
 }

@@ -217,25 +217,30 @@ void ASpaceCombatPawn::FireWeapons()
 	}
 }
 
-FVector ASpaceCombatPawn::GetVelocity()
+FVector ASpaceCombatPawn::GetVelocity() const
 {
 	return GetActorForwardVector() *= CurrentForwardSpeed;
 }
 
-float ASpaceCombatPawn::GetMaxSpeed()
+float ASpaceCombatPawn::GetMaxSpeed() const
 {
 	return MaxSpeed;
 }
 
-FVector ASpaceCombatPawn::GetPosition()
+FVector ASpaceCombatPawn::GetPosition() const
 {
 	return GetActorLocation();
 }
 
-float ASpaceCombatPawn::GetMaxAcceleration()
+float ASpaceCombatPawn::GetMaxAcceleration() const
 {
 	//we divide by two to get max turn speed per second (since input lerps over 2 seconds)
 	float MaxDegreeRotInSecond = TurnSpeed / 2;
 
 	return MaxDegreeRotInSecond;
+}
+
+AActor* ASpaceCombatPawn::GetFleeTarget() const
+{
+	return IBoidInterface::GetFleeTarget();
 }

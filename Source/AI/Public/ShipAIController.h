@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BoidInterface.h"
 #include "ShipAIController.generated.h"
 
+class IBoidInterface;
 /**
  * 
  */
@@ -25,7 +27,10 @@ public:
     FVector Flee(const FVector& TargetLocation, float DesiredMinDistance) const;
 
 	FVector Wander();
+	
+	FVector Pursue(const IBoidInterface& target, float DeltaTime) const;
 
+	FVector Evade(const IBoidInterface& Target, float DeltaTime) const;
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 

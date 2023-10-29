@@ -10,6 +10,7 @@ AShipPawn::AShipPawn()
 	MaxSpeed = 1000.f;
 	MaxAcceleration = 200.f;
 	Target = nullptr;
+	FleeTarget = nullptr;
 	Velocity = FVector(50, 0, 0);
 }
 
@@ -26,23 +27,23 @@ void AShipPawn::Tick(float DeltaTime)
 }
 
 
-float AShipPawn::GetMaxSpeed()
+float AShipPawn::GetMaxSpeed() const
 {
 	return MaxSpeed;
 }
 
 
-FVector AShipPawn::GetVelocity()
+FVector AShipPawn::GetVelocity() const
 {
 	return Velocity;
 }
 
-FVector AShipPawn::GetPosition()
+FVector AShipPawn::GetPosition() const
 {
 	return GetActorLocation();
 }
 
-float AShipPawn::GetMaxAcceleration()
+float AShipPawn::GetMaxAcceleration() const
 {
 	return MaxAcceleration;
 }
@@ -60,9 +61,14 @@ void AShipPawn::SetPosition(FVector NewValue)
 	SetActorLocation(NewValue);
 }
 
-FVector AShipPawn::GetTarget()
+AActor* AShipPawn::GetTarget() const
 {
-	if(!Target->IsValidLowLevel()) return IBoidInterface::GetTarget();
-	return Target->GetActorLocation();
+	if(!Target->IsValidLowLevel()) return nullptr;
+	return Target;
+}
+
+AActor* AShipPawn::GetFleeTarget() const
+{
+	return FleeTarget;
 }
 

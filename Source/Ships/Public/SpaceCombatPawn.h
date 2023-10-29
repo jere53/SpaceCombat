@@ -116,8 +116,9 @@ public:
 	FORCEINLINE class UCameraComponent* GetCamera() const { return Camera; }
 
 	// Inherited via IBoidInterface
-	virtual FVector GetVelocity() override;
-	virtual float GetMaxSpeed() override;
-	virtual FVector GetPosition() override;
-	virtual float GetMaxAcceleration() override;
+	virtual FVector GetVelocity() const override;
+	virtual float GetMaxSpeed() const override;
+	virtual FVector GetPosition() const override;
+	virtual float GetMaxAcceleration() const override;
+	virtual AActor* GetFleeTarget() const override;
 };

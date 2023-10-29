@@ -26,13 +26,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual float GetMaxSpeed() override;
-	virtual FVector GetVelocity() override;
-	virtual FVector GetPosition() override;
-	virtual float GetMaxAcceleration() override;
+	virtual float GetMaxSpeed() const override;
+	virtual FVector GetVelocity() const override;
+	virtual FVector GetPosition() const override;
+	virtual float GetMaxAcceleration() const override;
 	virtual void SetVelocity(FVector NewValue) override;
 	virtual void SetPosition(FVector NewValue) override;
-	virtual FVector GetTarget() override; 
+	virtual AActor* GetTarget() const override;
+	virtual AActor* GetFleeTarget() const override;
+
+	UPROPERTY(EditAnywhere)
+		AActor* FleeTarget;
 
 	UPROPERTY(EditAnywhere)
 		AActor* Target; 

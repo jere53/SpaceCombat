@@ -5,7 +5,7 @@
 
 // Add default functionality here for any IBoidInterface functions that are not pure virtual.
 
-FVector IBoidInterface::GetVelocity()
+FVector IBoidInterface::GetVelocity() const
 {
 	if (GEngine)
 	{
@@ -14,7 +14,7 @@ FVector IBoidInterface::GetVelocity()
 	return FVector();
 }
 
-float IBoidInterface::GetMaxSpeed()
+float IBoidInterface::GetMaxSpeed() const
 {
 	if (GEngine)
 	{
@@ -23,7 +23,7 @@ float IBoidInterface::GetMaxSpeed()
 	return 0.0f;
 }
 
-FVector IBoidInterface::GetPosition()
+FVector IBoidInterface::GetPosition() const
 {
 	if (GEngine)
 	{
@@ -32,7 +32,7 @@ FVector IBoidInterface::GetPosition()
 	return FVector();
 }
 
-float IBoidInterface::GetMaxAcceleration()
+float IBoidInterface::GetMaxAcceleration() const
 {
 	if (GEngine)
 	{
@@ -41,13 +41,22 @@ float IBoidInterface::GetMaxAcceleration()
 	return 0.0f;
 }
 
-FVector IBoidInterface::GetTarget()
+AActor* IBoidInterface::GetTarget() const
 {
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Base Boid method called")));
 	}
-	return FVector::Zero();
+	return nullptr;
+}
+
+AActor* IBoidInterface::GetFleeTarget() const
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Base Boid method called")));
+	}
+	return nullptr;
 }
 
 void IBoidInterface::SetVelocity(FVector NewValue)
